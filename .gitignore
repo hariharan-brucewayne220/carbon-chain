@@ -1,0 +1,16 @@
+node_modules/
+artifacts/
+cache/
+typechain-types/
+coverage/
+coverage.json
+
+.env
+frontend/.env
+
+# Raw data downloads (too large for git)
+data/ghgp_data.csv
+data/nri_county.csv
+
+# OS
+.DS_Store

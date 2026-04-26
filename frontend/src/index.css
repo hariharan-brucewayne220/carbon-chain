@@ -1,0 +1,5 @@
+/* CarbonChain — reset only. All design tokens are in index.html <style> and inline styles. */
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; }
+button { cursor: pointer; }
+a { color: inherit; }

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CarbonChain — Institutional Climate Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600;700&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              carbon: {
+                bg:'#0f172a', surface:'#1e293b', elevated:'#334155',
+                border:'#475569', action:'#0ea5e9', text:'#f1f5f9',
+                muted:'#94a3b8', dim:'#64748b',
+              },
+              status: {
+                compliant:'#10b981', improving:'#f59e0b',
+                violation:'#ef4444', nodata:'#64748b',
+              },
+            },
+            fontFamily: {
+              serif:["'IBM Plex Serif'",'serif'],
+              mono:["'JetBrains Mono'",'monospace'],
+              sans:['Inter','sans-serif'],
+            },
+          }
+        }
+      }
+    </script>
+    <style>
+      html,body,#root{height:100%;margin:0;background:#0f172a;overflow:hidden}
+      body{color:#f1f5f9;font-family:'Inter',sans-serif;overscroll-behavior:none}
+      *::selection{background:rgba(14,165,233,0.3)}
+      ::-webkit-scrollbar{width:6px;height:6px}
+      ::-webkit-scrollbar-track{background:#0f172a}
+      ::-webkit-scrollbar-thumb{background:#334155;border-radius:3px}
+      ::-webkit-scrollbar-thumb:hover{background:#475569}
+      input[type="range"]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;outline:none;background:linear-gradient(to right,#0ea5e9 0%,#0ea5e9 var(--p,20%),#334155 var(--p,20%))}
+      input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#f1f5f9;border:2px solid #0ea5e9;cursor:pointer}
+      @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+      @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+      .anim-fade-up{animation:fadeUp 0.2s ease-out both}
+      .pulse-dot{animation:pulse 2s infinite}
+      .scrollable{overflow-y:auto;overflow-x:hidden}
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
