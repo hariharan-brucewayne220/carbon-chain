@@ -14,3 +14,7 @@ data/nri_county.csv
 
 # OS
 .DS_Store
+
+# Project docs
+spec.md
+CLAUDE.md
