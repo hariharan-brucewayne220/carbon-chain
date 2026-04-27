@@ -1,6 +1,6 @@
 # CarbonChain — Decentralized Carbon Footprint Reporting
 
-A blockchain-based platform for transparent, verifiable facility-level carbon emission reporting with geospatial risk analysis. Built as a portfolio project targeting **CEARTscore** (clean energy due diligence, NYC).
+A blockchain-based platform for transparent, verifiable facility-level carbon emission reporting with geospatial risk analysis.
 
 ## Screenshots
 
