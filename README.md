@@ -2,6 +2,19 @@
 
 A blockchain-based platform for transparent, verifiable facility-level carbon emission reporting with geospatial risk analysis. Built as a portfolio project targeting **CEARTscore** (clean energy due diligence, NYC).
 
+## Screenshots
+
+![Dashboard — facility map with compliance status](dashboard.jpg)
+*Dashboard: 21 facilities plotted on a custom SVG CONUS map, color-coded by compliance status with live filters*
+
+![Register Facility](register.jpg)
+*Register: on-chain facility registration form with live map pin placement and transaction preview*
+
+![Report Emissions](report.jpg)
+*Report: live compliance preview as you type, emission trajectory chart, one-click on-chain submission*
+
+---
+
 ## Live Demo
 
 - **Frontend:** [Netlify URL — coming soon]

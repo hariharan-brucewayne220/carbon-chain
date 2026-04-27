@@ -6,7 +6,7 @@ import { useWallet } from '../hooks/useWallet'
 import { PERIODS, ETHERSCAN_BASE } from '../lib/constants'
 import { fmtNum } from '../data/seed'
 
-export default function Report({ facilities, fireToast }) {
+export default function Report({ facilities, fireToast, refresh, onNavigate }) {
   const { isConnected, address } = useWallet()
   const { pending, txHash, reportEmissions } = useContract()
   const [facilityId, setFacilityId] = useState('')
@@ -33,11 +33,19 @@ export default function Report({ facilities, fireToast }) {
   async function submit() {
     if (!isConnected) { fireToast({ kind: 'error', title: 'Connect wallet first' }); return }
     try {
+      const onChainId = selected.chainId || selected.id
+      if (!onChainId) { fireToast({ kind: 'error', title: 'Facility not registered on-chain yet' }); return }
       const { txHash: hash } = await reportEmissions({
-        facilityId: selected.id, co2Tonnes: co2Num, period,
+        facilityId:        onChainId,
+        co2Tonnes:         co2Num,
+        period,
+        baselineEmissions: selected.baselineEmissions,
+        reductionTarget:   selected.reductionTarget,
       })
       fireToast({ kind: 'success', title: 'Report submitted', body: `${period} · ${fmtNum(co2Num)} t CO₂` })
       setCo2('')
+      await refresh?.()
+      setTimeout(() => onNavigate?.({ name: 'facility', id: selected.id }), 1000)
     } catch (e) {
       fireToast({ kind: 'error', title: 'Transaction failed', body: e.message?.slice(0, 60) })
     }

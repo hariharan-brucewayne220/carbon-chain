@@ -11,7 +11,7 @@ export default function App() {
   const [route, setRoute]       = useState({ name: 'dashboard' })
   const [selected, setSelected] = useState(null)
   const [toast, setToast]       = useState(null)
-  const { facilities }          = useFacilities()
+  const { facilities, refresh } = useFacilities()
 
   function fireToast(t) {
     setToast(t)
@@ -28,6 +28,12 @@ export default function App() {
     if (r.name !== 'facility') setSelected(null)
   }
 
+  async function onRegisterSuccess() {
+    fireToast({ kind: 'success', title: 'Facility registered!' })
+    await refresh()          // reload from Supabase so Report dropdown updates
+    navigate({ name: 'dashboard' })
+  }
+
   return (
     <div className="absolute inset-0" style={{ backgroundColor: '#0f172a' }}>
       <Navbar route={route} setRoute={navigate} />
@@ -36,13 +42,10 @@ export default function App() {
         <Dashboard facilities={facilities} onOpenFacility={openFacility} />
       )}
       {route.name === 'register' && (
-        <Register
-          onSuccess={() => { fireToast({ kind: 'success', title: 'Facility registered!' }); navigate({ name: 'dashboard' }) }}
-          fireToast={fireToast}
-        />
+        <Register onSuccess={onRegisterSuccess} fireToast={fireToast} />
       )}
       {route.name === 'report' && (
-        <Report facilities={facilities} fireToast={fireToast} />
+        <Report facilities={facilities} fireToast={fireToast} refresh={refresh} onNavigate={navigate} />
       )}
       {route.name === 'facility' && (
         <FacilityDetail
@@ -50,6 +53,7 @@ export default function App() {
           allFacilities={facilities}
           onBack={() => navigate({ name: 'dashboard' })}
           onOpenFacility={openFacility}
+          refresh={refresh}
         />
       )}
 
