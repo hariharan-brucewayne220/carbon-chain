@@ -13,6 +13,9 @@ CREATE TABLE IF NOT EXISTS facilities (
     industry_type       TEXT NOT NULL,
     org_wallet          TEXT,
     location            GEOGRAPHY(POINT, 4326) NOT NULL, -- PostGIS geography point
+    -- Plain lat/lng derived from location so select('*') returns them directly
+    lat                 DOUBLE PRECISION GENERATED ALWAYS AS (ST_Y(location::geometry)) STORED,
+    lng                 DOUBLE PRECISION GENERATED ALWAYS AS (ST_X(location::geometry)) STORED,
     baseline_emissions  INTEGER NOT NULL,                -- tonnes CO2e/year
     reduction_target    INTEGER DEFAULT 20,              -- percentage
     registered_at       TIMESTAMPTZ DEFAULT NOW(),
@@ -22,6 +25,11 @@ CREATE TABLE IF NOT EXISTS facilities (
     state_code          TEXT,                            -- 2-digit FIPS (e.g. "06" = CA)
     county              TEXT
 );
+
+-- For databases created before lat/lng were added to the table definition above
+ALTER TABLE facilities
+    ADD COLUMN IF NOT EXISTS lat DOUBLE PRECISION GENERATED ALWAYS AS (ST_Y(location::geometry)) STORED,
+    ADD COLUMN IF NOT EXISTS lng DOUBLE PRECISION GENERATED ALWAYS AS (ST_X(location::geometry)) STORED;
 
 CREATE INDEX IF NOT EXISTS idx_facilities_location  ON facilities USING GIST(location);
 CREATE INDEX IF NOT EXISTS idx_facilities_state     ON facilities(state_code);

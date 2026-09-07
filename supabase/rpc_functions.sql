@@ -212,3 +212,34 @@ AS $$
         AND f.county     = nri.county_name
     WHERE f.id = facility_row_id;
 $$;
+
+
+-- ─── 5. insert_facility ──────────────────────────────────────────────────────
+-- Mirror a freshly registered on-chain facility into Supabase.
+-- Called by frontend/src/hooks/useContract.js after the registerFacility tx
+-- is mined; parameter names must match the keys passed to supabase.rpc().
+-- Returns the new facilities.id.
+
+CREATE OR REPLACE FUNCTION insert_facility(
+    p_chain_id  INTEGER,
+    p_org       TEXT,
+    p_name      TEXT,
+    p_industry  TEXT,
+    p_lat       DOUBLE PRECISION,
+    p_lng       DOUBLE PRECISION,
+    p_baseline  INTEGER,
+    p_target    INTEGER DEFAULT 20,
+    p_wallet    TEXT DEFAULT NULL
+)
+RETURNS INTEGER
+LANGUAGE sql VOLATILE
+AS $$
+    INSERT INTO facilities
+        (chain_facility_id, org_name, facility_name, industry_type, org_wallet,
+         location, baseline_emissions, reduction_target)
+    VALUES
+        (p_chain_id, p_org, p_name, p_industry, p_wallet,
+         ST_SetSRID(ST_MakePoint(p_lng, p_lat), 4326)::geography,
+         p_baseline, COALESCE(p_target, 20))
+    RETURNING id;
+$$;

@@ -152,7 +152,7 @@ carbon-chain/
 │   └── prepare_epa_data.py         # EPA GHGRP CSV → Supabase seed SQL
 ├── supabase/
 │   ├── schema.sql                  # Tables + PostGIS + indexes
-│   ├── rpc_functions.sql           # 4 PostGIS spatial functions
+│   ├── rpc_functions.sql           # 4 PostGIS spatial functions + insert_facility RPC
 │   ├── seed_facilities.sql         # 15 US facilities across 13 states
 │   └── seed_reports.sql            # 45 emission reports (2021-2023)
 ├── frontend/
@@ -160,7 +160,7 @@ carbon-chain/
 │       ├── components/             # Navbar, MapView, EmissionChart, badges
 │       ├── pages/                  # Dashboard, Register, Report, FacilityDetail
 │       ├── hooks/                  # useWallet, useFacilities, useContract
-│       └── lib/                    # wagmi config, supabase client, contract ABI
+│       └── lib/                    # supabase client, contract ABI, constants
 ├── hardhat.config.js
 └── package.json
 ```
@@ -193,7 +193,7 @@ cp frontend/.env.example frontend/.env
 
 ### 3. Deploy contract
 ```bash
-node node_modules/hardhat/internal/cli/cli.js run scripts/deploy.js --network sepolia
+npx hardhat run scripts/deploy.js --network sepolia
 ```
 
 ### 4. Set up Supabase
@@ -220,7 +220,7 @@ Open [http://localhost:5173](http://localhost:5173)
 
 ### 6. Run tests
 ```bash
-node node_modules/hardhat/internal/cli/cli.js test
+npx hardhat test
 # 24 passing
 ```
 
