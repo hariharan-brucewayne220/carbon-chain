@@ -213,7 +213,7 @@ ALTER TABLE emission_reports DISABLE ROW LEVEL SECURITY;
 
 ### 5. Run frontend
 ```bash
-cd frontend && node_modules/.bin/vite
+cd frontend && npm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173)
