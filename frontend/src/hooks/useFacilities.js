@@ -11,7 +11,11 @@ function getSeedMatch(f) {
 async function loadFromSupabase() {
   const [{ data: facs, error: fe }, { data: reports, error: re }] = await Promise.all([
     supabase.from('facilities').select('*').eq('active', true),
-    supabase.from('emission_reports').select('*').order('reported_at', { ascending: true }),
+    // period breaks ties: seeded reports all share one reported_at, and the UI
+    // treats the last element of reports[] as the latest one
+    supabase.from('emission_reports').select('*')
+      .order('reported_at', { ascending: true })
+      .order('period', { ascending: true }),
   ])
   if (fe || re || !facs || facs.length === 0) return null
   const repMap = {}

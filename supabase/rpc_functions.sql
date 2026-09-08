@@ -1,9 +1,17 @@
 -- PostGIS RPC functions — callable from Supabase JS client via supabase.rpc()
 -- Run after schema.sql
+--
+-- "Latest report" lookups order by reported_at DESC, period DESC: every row a
+-- seed file inserts in one statement shares the same NOW(), so without the
+-- period tie-break the picked report is arbitrary.
 
 -- ─── 1. nearby_facilities ────────────────────────────────────────────────────
 -- Find facilities within `radius_meters` of a lat/lng point.
 -- Uses ST_DWithin on the GEOGRAPHY column (accurate great-circle distance).
+-- NOTE: facilities has its own lat/lng columns, which shadow the parameters of
+-- the same name in any query that selects from it. The search point is built in
+-- the `origin` CTE, which does not reference facilities, so `lat`/`lng` there
+-- bind to the parameters. Do not inline ST_MakePoint(lng, lat) below.
 
 CREATE OR REPLACE FUNCTION nearby_facilities(
     lat           DOUBLE PRECISION,
@@ -24,6 +32,9 @@ RETURNS TABLE (
 )
 LANGUAGE sql STABLE
 AS $$
+    WITH origin AS (
+        SELECT ST_SetSRID(ST_MakePoint(lng, lat), 4326)::geography AS pt
+    )
     SELECT
         f.id,
         f.org_name,
@@ -33,22 +44,23 @@ AS $$
         latest.co2_tonnes   AS latest_co2,
         latest.meets_target,
         ROUND(
-            (ST_Distance(f.location, ST_MakePoint(lng, lat)::geography) / 1000)::numeric,
+            (ST_Distance(f.location, o.pt) / 1000)::numeric,
             2
         )::double precision AS distance_km,
         ST_Y(f.location::geometry) AS latitude,
         ST_X(f.location::geometry) AS longitude
     FROM facilities f
+    CROSS JOIN origin o
     LEFT JOIN LATERAL (
         SELECT co2_tonnes, meets_target
         FROM emission_reports er
         WHERE er.facility_id = f.id
-        ORDER BY er.reported_at DESC
+        ORDER BY er.reported_at DESC, er.period DESC
         LIMIT 1
     ) latest ON TRUE
     WHERE ST_DWithin(
         f.location,
-        ST_MakePoint(lng, lat)::geography,
+        o.pt,
         radius_meters
     )
     AND f.active = TRUE
@@ -152,7 +164,7 @@ AS $$
         SELECT co2_tonnes, meets_target
         FROM emission_reports er
         WHERE er.facility_id = f.id
-        ORDER BY er.reported_at DESC
+        ORDER BY er.reported_at DESC, er.period DESC
         LIMIT 1
     ) latest ON TRUE
     WHERE f.active = TRUE
@@ -204,7 +216,7 @@ AS $$
         SELECT meets_target, percent_change
         FROM emission_reports er
         WHERE er.facility_id = f.id
-        ORDER BY er.reported_at DESC
+        ORDER BY er.reported_at DESC, er.period DESC
         LIMIT 1
     ) latest ON TRUE
     LEFT JOIN fema_risk_index nri
